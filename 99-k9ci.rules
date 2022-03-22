@@ -1,0 +1,2 @@
+#ACTION=="add", SUBSYSTEM=="usb", ENV{ID_VENDOR}=="Logitech, Inc.", ENV{ID_PRODUCT}=="Washable Keyboard K310", RUN+="/usr/bin/echo yes > /tmp/udevk9"
+ACTION=="add", SUBSYSTEM=="usb", ENV{ID_VENDOR}=="Logitech", ENV{ID_PRODUCT}=="USB Keyboard", RUN{program}+="/usr/bin/echo yes > /tmp/udevk9"
