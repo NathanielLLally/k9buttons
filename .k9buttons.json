@@ -1,0 +1,1 @@
+{"actions":[],"buttons":{"Purple":"espeak -s 140 -v _en \"Play\"","Green":"espeak -s 140 -v _en \"Run\"","Orange":"espeak -s 140 -v _en \"Hungry\"","Blue":"/usr/bin/espeak -s 140 -v _en 'get busy'"}}
