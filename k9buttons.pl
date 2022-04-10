@@ -9,6 +9,7 @@ use DateTime;
 use IPC::Run qw/run timeout/;
 use Data::Dumper;
 use JSON;
+use Text::ParseWords;
 use warnings;
 use strict;
 
@@ -164,6 +165,10 @@ sub AddAction {
   my ($then);
 sub keysym { 
   my($widget) = @_;
+
+  my $who = $widget->focusCurrent;
+  return if ($who->isa("Tk::Entry"));
+
   my $e = $widget->XEvent;
 # get event object 
   my($keysym_text, $keysym_decimal) = ($e->K, $e->N); 
@@ -251,7 +256,7 @@ sub BuildTable {
       print "$name\n";
 	    my $lbl = $table->Label(-text => "$name",
 				    -relief => 'sunken',
-            -background => $name,
+            -background => "$name",
             -padx => 10,
             -pady => 10
 				    );
@@ -344,11 +349,16 @@ sub Button {
   if (defined $cmd) {
     print "$cmd";
     print "\n";
-    my @cmd = split " ", $cmd;
-    my ($in, $out, $err);
-    run \@cmd, \$in, \$out, \$err, timeout( 10 ) or die "cmd [$cmd]: $?";
-    print "$out\n";
-    print "$err\n";
+
+    my @cmd = quotewords('\s+', 0, $cmd);
+
+    my ($in, $out, $err, $out_and_err);
+#    run \@cmd, \$in, \$out, \$err, timeout( 10 ) or die "cmd [$cmd]: $?";
+#    run \@cmd, \$in, \$out, \$err, timeout( 10 ) or die "cmd [$cmd]: $?";
+#    print "$out\n";
+#    print "$err\n";
+    run \@cmd, '<pty<', \$in,  '>pty>', \$out_and_err;
+    print "$out_and_err\n";
 
   } else {
     print "\n";
