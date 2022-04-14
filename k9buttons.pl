@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 use Tk;
+use Tk::Wm;
 use Tk::Table;
 use Tk::DragDrop;
 use Tk::DropSite;
@@ -36,7 +37,7 @@ my $w_buttons = $w->Frame;
 $w->Label(-text => "Drag action from list to specific button " .
 	  "")
     ->pack(-side => 'bottom');
-my $tf = $w->Frame->pack(-side => 'right');
+my $tf = $w->Frame->pack(-side => 'top', -fill => 'x');
 my $table = $tf->Table(-rows => 6,
 		      -columns => 2,
 		      -scrollbars => '',
@@ -44,7 +45,7 @@ my $table = $tf->Table(-rows => 6,
 		      -fixedcolumns => 1,
 		      -takefocus => 1,
 		     );
-$table->pack(-side => 'top', -fill => 'both');
+$table->pack(-side => 'top', -fill => 'x', -expand=>1);
 #my $geltitle = $tf->Label(-relief => 'raised')->pack(-side => 'top', -fill => 'x');
 $w_buttons->pack(qw(-side bottom -fill x -pady 0.5m));
 
@@ -62,27 +63,34 @@ $method = 'variable';
 my $addCmd;
 $w_buttons->Button(
   -background => $ButtonClr,
+  -text => "Exit",
+  -command => [sub { exit(1); }],
+  -padx => 5,
+  -pady => 5,
+  )->pack(qw/-side left/);
+$w_buttons->Button(
+  -background => $ButtonClr,
   -text => "Add Action",
   -command => [\&AddAction],
   -padx => 5,
   -pady => 5,
-  )->pack(qw/-side left -expand 1 -fill both/);
+  )->pack(qw/-side left/);
 $w_buttons->Entry(
   -textvariable => \$addCmd,
   -width => 60,
-)->pack(qw/-side left -expand 1 -fill both/);
+)->pack(qw/-side top -fill x/);
 
 #my $w_entry = $w_buttons->Entry(
 #    -width=>1,
 #    -takefocus=>1,
 #  )->pack(qw/-side right/);
 
-my $aw = $w->Frame->pack(qw(-side bottom));
+my $aw = $w->Frame->pack(qw(-side bottom -expand 1 -fill both));
 $aw->Label(-text => "Available Actions")->pack(-side => 'top',
 						  -fill => 'x');
 my $lb = $aw->Listbox(-height => 10, -width => 62,
 		      -background => $DfltClr, -font => $font3);
-$lb->pack(-side => 'left', -fill => 'y');
+$lb->pack(-side => 'left', -fill => 'y', -expand=>1);
 my $awsb = $aw->Scrollbar(-command => [$lb => 'yview']);
 $awsb->pack(-side => 'right', -fill => 'y');
 $lb->configure(-yscrollcommand => [$awsb => 'set']);
@@ -200,6 +208,7 @@ sub keysym {
 $w->bind('<KeyPress>' => \&keysym); 
  #docstore.mik.ua/orelly/perl3/tk/ch15_02.htm
 
+
 #
 # Populate the table and listbox
 #
@@ -207,13 +216,28 @@ $w->bind('<KeyPress>' => \&keysym);
 BuildTable();
 Fill_lb();
 
+
+#$w->overrideredirect(1);
+#$w->MoveResizewWindow(0,0, $width, $height);
 #	$source->configure(-image => 'win');
 #	$source->configure(-startcommand => \&DragOK);
 
 
+#my $control = $w->TopLevel (
+#  -title => 'Dog Buttons',
+#  );
+#$control->MoveResizeWindow(-150,-150, 50, 50);
+#$control->bind('<FocusIn>', sub {
+#  $w->focusForce;
+#});
+
 #
 # Let the user interact
 #
+my ($width, $height) = ($w->screenwidth, $w->screenheight);
+$w->geometry(join('x', $width, $height)."+0+0");
+$w->FullScreen(1);
+$w->overrideredirect(1);
 
 MainLoop();
 
@@ -232,7 +256,7 @@ sub Fill_lb {
 
     my $conf = loadConf();
     print Dumper(\$conf);
-    if (defined $conf) {
+    if (defined $conf and exists $conf->{actions}) {
       my @data = @{$conf->{actions}};
       $lb->insert('end',@data);
     }
