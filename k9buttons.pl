@@ -236,8 +236,11 @@ Fill_lb();
 #
 my ($width, $height) = ($w->screenwidth, $w->screenheight);
 $w->geometry(join('x', $width, $height)."+0+0");
-$w->FullScreen(1);
+#$w->FullScreen(1);
 $w->overrideredirect(1);
+$w->overrideredirect(0);
+$w->attributes('-fullscreen', 1);
+#$w->focusForce;
 
 MainLoop();
 
